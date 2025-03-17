@@ -71,6 +71,7 @@ public class twitchPlaysClient implements ClientModInitializer {
             if (CInputs.jcd == 0) CInputs.jump = false;
             if (CInputs.sneakcd == 0) CInputs.sneak = false;
             if (CInputs.usecd == 0) CInputs.use = false;
+            if (CInputs.sprintcd == 0) CInputs.sprint = false;
 
             if (CInputs.acd > 0) CInputs.acd--;
             if (CInputs.wcd > 0) CInputs.wcd--;
@@ -79,6 +80,7 @@ public class twitchPlaysClient implements ClientModInitializer {
             if (CInputs.jcd > 0) CInputs.jcd--;
             if (CInputs.breakcd > 0) CInputs.breakcd--;
             if (CInputs.sneakcd > 0) CInputs.sneakcd--;
+            if (CInputs.sprintcd > 0) CInputs.sprintcd--;
             if (CInputs.usecd > 0) CInputs.usecd--;
             if (CInputs.ecd > 0) CInputs.ecd--;
 

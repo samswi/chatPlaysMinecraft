@@ -13,6 +13,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class CInputs {
     static final MinecraftClient client = MinecraftClient.getInstance();
@@ -40,70 +41,91 @@ public class CInputs {
     public static int sneakcd;
     public static int usecd;
     public static int ecd;
+    public static int sprintcd;
 
     public static void processChatCommands(String chatMessage) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        System.out.println("Detected message");
         if (chatMessage.length() >= 2 && chatMessage.toLowerCase().startsWith("c ") && client.player != null && (client.currentScreen instanceof InventoryScreen || client.currentScreen instanceof CraftingScreen)) {
             String searchFor = chatMessage.substring(2);
-            List<RecipeResultCollection> myList = MinecraftClient.getInstance().getNetworkHandler().getSearchManager().getRecipeOutputReloadFuture().findAll(searchFor.toLowerCase(Locale.ROOT));
+            List<RecipeResultCollection> myList = Objects.requireNonNull(client.getNetworkHandler()).getSearchManager().getRecipeOutputReloadFuture().findAll(searchFor.toLowerCase(Locale.ROOT));
+            assert client.interactionManager != null;
             client.interactionManager.clickRecipe(client.player.currentScreenHandler.syncId, myList.getFirst().getAllRecipes().getFirst().id(), false);
-            if(client.currentScreen instanceof HandledScreen<?> handledScreen && client.interactionManager != null && !(client.currentScreen instanceof FurnaceScreen)) {
+            if (client.currentScreen instanceof HandledScreen<?> handledScreen && client.interactionManager != null && !(client.currentScreen instanceof FurnaceScreen)) {
                 client.interactionManager.clickSlot(handledScreen.getScreenHandler().syncId, 0, 0, SlotActionType.QUICK_MOVE, client.player);
             }
         }
         switch (chatMessage.toLowerCase()) {
-            case "a" -> { CInputs.left = true; CInputs.acd = 20; }
-            case "d" -> { CInputs.right = true; CInputs.dcd = 20; }
-            case "s" -> { CInputs.backward = true; CInputs.scd = 20; }
-            case "jump" -> { CInputs.jump = true; CInputs.jcd = 10; }
-            case "w" -> { CInputs.forward = true; CInputs.wcd = 20; }
-            case "spr" -> {CInputs.sprint = !CInputs.sprint;}
-            case "sprint" -> {CInputs.sprint = !CInputs.sprint;}
-            case "snk" -> {CInputs.sneak = true; CInputs.sneakcd = 100;}
-            case "sneak" -> {CInputs.sneak = true; CInputs.sneakcd = 100;}
-            case "att" -> CInputs.attack = !CInputs.attack ;
-            case "attack" -> CInputs.attack = !CInputs.attack ;
+            case "a" -> {
+                CInputs.left = true;
+                CInputs.acd = 20;
+            }
+            case "d" -> {
+                CInputs.right = true;
+                CInputs.dcd = 20;
+            }
+            case "s" -> {
+                CInputs.backward = true;
+                CInputs.scd = 20;
+            }
+            case "jump" -> {
+                CInputs.jump = true;
+                CInputs.jcd = 10;
+            }
+            case "w" -> {
+                CInputs.forward = true;
+                CInputs.wcd = 20;
+            }
+            case "spr", "sprint" -> {
+                CInputs.sprint = true;
+                CInputs.sprintcd = 100;
+            }
+
+            case "snk", "sneak" -> {
+                CInputs.sneak = true;
+                CInputs.sneakcd = 100;
+            }
+            case "att", "attack" -> CInputs.attack = !CInputs.attack;
             case "place" -> CInputs.place = true;
-            case "respawn" -> MinecraftClient.getInstance().player.requestRespawn();
-            case "break" -> {CInputs.breaking = true; CInputs.breakcd = 200;}
-            case "use" -> {CInputs.use = true; CInputs.usecd = 40;}
+            case "respawn" -> {if(client.player != null) {client.player.requestRespawn();}}
+            case "break" -> {
+                CInputs.breaking = true;
+                CInputs.breakcd = 200;
+            }
+            case "use" -> {
+                CInputs.use = true;
+                CInputs.usecd = 40;
+            }
             case "e" -> {
                 if (CInputs.ecd == 0 && client.player != null && CInputs.enabled) {
                     if (client.currentScreen == null || client.currentScreen instanceof ChatScreen) {
-                        MinecraftClient.getInstance().execute(() -> {
-                            MinecraftClient.getInstance().setScreen(new InventoryScreen(MinecraftClient.getInstance().player));
+                        client.execute(() -> {
+                            client.setScreen(new InventoryScreen(client.player));
                             CInputs.ecd = 100;
                         });
-                    }else if (!(client.currentScreen instanceof OptionsScreen) && !(client.currentScreen instanceof ChatControlsConfigScreen) && !(client.currentScreen instanceof GameMenuScreen)){
-                        MinecraftClient.getInstance().execute(() -> {
-                            MinecraftClient.getInstance().setScreen(null);
-                        });
+                    } else if (!(client.currentScreen instanceof OptionsScreen) && !(client.currentScreen instanceof ChatControlsConfigScreen) && !(client.currentScreen instanceof GameMenuScreen)) {
+                        client.execute(() -> client.setScreen(null));
                     }
                 }
             }
         }
 
-        if (chatMessage.toLowerCase().charAt(0) == 'r') {
-            try{
-                if (chatMessage.toLowerCase().charAt(1) == 'y') {
-                    String[] splited = chatMessage.split("y");
-                        Float inputedYaw = Float.parseFloat(splited[1]);
-                        if (inputedYaw >= -360 && inputedYaw <= 360)
-                            client.player.setYaw(client.player.getYaw() + inputedYaw);
-                } else if (chatMessage.toLowerCase().charAt(1) == 'p') {
-                    String[] splited = chatMessage.split("p");
-                        Float inputedPitch = Float.parseFloat(splited[1]);
-                        if (inputedPitch >= -360 && inputedPitch <= 360)
-                            client.player.setPitch(client.player.getPitch() + inputedPitch);
-
-                }
-            } catch (Exception e) {
-                return;
+        if (chatMessage.toLowerCase().charAt(0) == 'r' && client.player != null) {
+            if (chatMessage.toLowerCase().charAt(1) == 'y') {
+                String[] splitted = chatMessage.split("y");
+                float inputtedYaw = Float.parseFloat(splitted[1]);
+                if (inputtedYaw >= -360 && inputtedYaw <= 360)
+                    client.player.setYaw(client.player.getYaw() + inputtedYaw);
+            } else if (chatMessage.toLowerCase().charAt(1) == 'p') {
+                String[] splitted = chatMessage.split("p");
+                float inputtedPitch = Float.parseFloat(splitted[1]);
+                if (inputtedPitch >= -360 && inputtedPitch <= 360)
+                    client.player.setPitch(client.player.getPitch() + inputtedPitch);
             }
+        } else if (chatMessage.toLowerCase().startsWith("i ")) {
+            String[] splited = chatMessage.split(" ");
+            twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));
         } else if (chatMessage.contains(" ")) {
+            String[] splited = chatMessage.split(" ");
             try {
-                String[] splited = chatMessage.split(" ");
                 int ticks = Integer.parseInt(splited[1]);
                 if (ticks < 0) return;
                 switch (splited[0].toLowerCase()) {
@@ -136,41 +158,13 @@ public class CInputs {
                         CInputs.sneakcd = ticks;
                     }
                     case "h" -> {
-                        if (ticks >=1 && ticks <= 9 && client.player != null) {
+                        if (ticks >= 1 && ticks <= 9 && client.player != null) {
                             client.player.getInventory().selectedSlot = (ticks - 1);
                         }
                     }
                 }
-            }
-            catch (Exception e) {return;}
+            } catch (NumberFormatException ignored) {}
         }
-
-        if (chatMessage.toLowerCase().startsWith("i ")) {
-            System.out.println("detected i");
-            String[] splited = chatMessage.split(" ");
-            try
-            {
-                twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));
-                System.out.println("Attemp succeesful");
-            }
-            catch (Exception e){
-                System.out.println("Something went wrong");
-                return;
-            }
-        }
-        else if(chatMessage.length() >=3 ) {
-            if (chatMessage.substring(0, 3).toLowerCase().contains("spr")) CInputs.sprint = !CInputs.sprint;
-            else if (chatMessage.substring(0, 3).toLowerCase().contains("att")) CInputs.attack = true;
-            else if (chatMessage.substring(0, 3).toLowerCase().contains("snk")) CInputs.sneak = !CInputs.sneak;
-            else if(chatMessage.length() >= 5) {if (chatMessage.substring(0, 5).toLowerCase().contains("break")) CInputs.sprint = !CInputs.sprint;}
-        }
-//        else if (chatMessage.toLowerCase().contains("e") && CInputs.ecd == 0) {
-//            MinecraftClient.getInstance().execute(() -> {
-//                MinecraftClient.getInstance().setScreen(new InventoryScreen(MinecraftClient.getInstance().player));
-//                CInputs.ecd = 100;
-//            }
-//            );
-//        };
     }
 }
 

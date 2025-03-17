@@ -57,7 +57,7 @@ public class ChatControlsConfigScreen extends Screen {
         // We'll subtract the font height from the Y position to make the text appear above the button.
         // Subtracting an extra 10 pixels will give the text some padding.
         // textRenderer, text, x, y, color, hasShadow
-        context.drawText(this.textRenderer, "Special Button", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Input twitch username", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     public void runTwitch(String channel){
