@@ -4,9 +4,10 @@
   "package": "org.samswi.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "DebugMixin",
+    "FpsInactivityMixin",
     "InputMixin",
-    "MouseInputMixin",
-    "DebugMixin"
+    "MouseInputMixin"
   ],
   "injectors": {
     "defaultRequire": 1

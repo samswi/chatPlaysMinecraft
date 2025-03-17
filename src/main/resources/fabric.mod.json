@@ -11,7 +11,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "org.samswi.client.twvsytClient"
+      "org.samswi.client.twitchPlaysClient"
     ],
     "main": [
       "org.samswi.twvsyt"

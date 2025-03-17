@@ -6,21 +6,16 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.Objects;
 
-public class twvsytClient implements ClientModInitializer {
+public class twitchPlaysClient implements ClientModInitializer {
 
     private static KeyBinding toggleKey;
     private static KeyBinding configKey;
@@ -154,14 +149,14 @@ public class twvsytClient implements ClientModInitializer {
 
     public static void chatListenerInitialize(String type, String channel) {
         final MinecraftClient client = MinecraftClient.getInstance();
-        if (twvsytClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); ; return;}
+        if (twitchPlaysClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); ; return;}
         if (type.equals("twitch")) {
             if (twitchThread == null || !twitchThread.isAlive()) {
                 twitchInstance = new TwitchListener(channel);
                 twitchThread = new Thread(twitchInstance::startListening);
                 twitchThread.start();
-                twvsytClient.chatListenerEnabled = true;
-                twvsytClient.currentChatType = "twitch";
+                twitchPlaysClient.chatListenerEnabled = true;
+                twitchPlaysClient.currentChatType = "twitch";
                 twitchChannel = channel;
                 MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Twitch chat connected!"), Text.of(("Listening to: " + channel))));
             }
@@ -169,7 +164,7 @@ public class twvsytClient implements ClientModInitializer {
     }
 
     public static void chatListenerStop() {
-        if (!twvsytClient.chatListenerEnabled) return;
+        if (!twitchPlaysClient.chatListenerEnabled) return;
         if (currentChatType.equals("twitch")) {
             if (twitchInstance != null) {
                 twitchInstance.stopListening(); // signals shouldRun = false
@@ -177,8 +172,8 @@ public class twvsytClient implements ClientModInitializer {
                     if (twitchThread != null) {
                         twitchThread.join(); // waits safely for thread termination
                         twitchThread = null;
-                        twvsytClient.chatListenerEnabled = false;
-                        twvsytClient.currentChatType = null;
+                        twitchPlaysClient.chatListenerEnabled = false;
+                        twitchPlaysClient.currentChatType = null;
                         twitchChannel = null;
                         MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Disconnected from twitch chat!"), Text.of("")));
                     }

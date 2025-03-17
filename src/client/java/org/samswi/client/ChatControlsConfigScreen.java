@@ -3,18 +3,11 @@ package org.samswi.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.OptionsScreen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
-
-import java.io.IOException;
 
 @Environment(EnvType.CLIENT)
 public class ChatControlsConfigScreen extends Screen {
@@ -36,17 +29,17 @@ public class ChatControlsConfigScreen extends Screen {
             this.init();
         }).dimensions(40, 65, 120, 20).build();
 
-        twitchConnect.active = !twvsytClient.chatListenerEnabled;
+        twitchConnect.active = !twitchPlaysClient.chatListenerEnabled;
 
         this.addDrawableChild(twitchConnect);
 
         ButtonWidget closeListener = ButtonWidget.builder(Text.of("Close connection"), (btn) -> {
             // When the button is clicked, we can display a toast to the screen.
-            twvsytClient.chatListenerStop();
+            twitchPlaysClient.chatListenerStop();
             this.init();
         }).dimensions(40, 90, 120, 20).build();
 
-        closeListener.active = twvsytClient.chatListenerEnabled;
+        closeListener.active = twitchPlaysClient.chatListenerEnabled;
 
         this.addDrawableChild(closeListener);
 
@@ -68,7 +61,7 @@ public class ChatControlsConfigScreen extends Screen {
     }
 
     public void runTwitch(String channel){
-        twvsytClient.chatListenerInitialize("twitch", channel);
+        twitchPlaysClient.chatListenerInitialize("twitch", channel);
     }
 }
 

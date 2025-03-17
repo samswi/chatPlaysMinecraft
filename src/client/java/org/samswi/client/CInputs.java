@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.List;
@@ -151,7 +150,7 @@ public class CInputs {
             String[] splited = chatMessage.split(" ");
             try
             {
-                twvsytClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));
+                twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));
                 System.out.println("Attemp succeesful");
             }
             catch (Exception e){

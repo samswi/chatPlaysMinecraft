@@ -4,11 +4,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.util.PlayerInput;
-import org.samswi.client.TwitchListener;
-import org.samswi.client.twvsytClient;
+import org.samswi.client.twitchPlaysClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,7 +24,7 @@ public abstract class InputMixin extends Input {
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void modifyInput(CallbackInfo ci) {
-        if (CInputs.enabled && twvsytClient.chatListenerEnabled && !(client.currentScreen instanceof HandledScreen<?>)) {
+        if (CInputs.enabled && twitchPlaysClient.chatListenerEnabled && !(client.currentScreen instanceof HandledScreen<?>)) {
             this.playerInput = new PlayerInput(CInputs.forward, CInputs.backward, CInputs.left, CInputs.right, CInputs.jump, CInputs.sneak, CInputs.sprint);
             this.movementForward = this.getMovementMultiplier(CInputs.forward, CInputs.backward);
             this.movementSideways = this.getMovementMultiplier(CInputs.left, CInputs.right);
