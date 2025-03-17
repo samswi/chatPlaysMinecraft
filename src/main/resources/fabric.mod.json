@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "thetwitchyoutube",
+  "version": "${version}",
+  "name": "thetwitchyoutube",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "org.samswi.client.twvsytClient"
+    ],
+    "main": [
+      "org.samswi.twvsyt"
+    ]
+  },
+  "mixins": [
+    "thetwitchyoutube.mixins.json",
+    {
+      "config": "thetwitchyoutube.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "*"
+  }
+}

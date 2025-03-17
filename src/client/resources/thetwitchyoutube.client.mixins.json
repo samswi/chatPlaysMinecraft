@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.samswi.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "InputMixin",
+    "MouseInputMixin",
+    "DebugMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
