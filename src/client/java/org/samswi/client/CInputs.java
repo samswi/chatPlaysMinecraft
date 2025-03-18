@@ -42,6 +42,7 @@ public class CInputs {
     public static int usecd;
     public static int ecd;
     public static int sprintcd;
+    public static int usedt;
 
     public static void processChatCommands(String chatMessage) {
         if (chatMessage.length() >= 2 && chatMessage.toLowerCase().startsWith("c ") && client.player != null && (client.currentScreen instanceof InventoryScreen || client.currentScreen instanceof CraftingScreen)) {
@@ -84,7 +85,9 @@ public class CInputs {
                 CInputs.sneakcd = 100;
             }
             case "att", "attack" -> CInputs.attack = !CInputs.attack;
-            case "place" -> CInputs.place = true;
+            case "place" -> {
+                CInputs.place = true; CInputs.usedt = 10;
+            }
             case "respawn" -> {if(client.player != null) {client.player.requestRespawn();}}
             case "break" -> {
                 CInputs.breaking = true;
@@ -93,6 +96,7 @@ public class CInputs {
             case "use" -> {
                 CInputs.use = true;
                 CInputs.usecd = 40;
+                CInputs.usedt = CInputs.usecd;
             }
             case "e" -> {
                 if (CInputs.ecd == 0 && client.player != null && CInputs.enabled) {

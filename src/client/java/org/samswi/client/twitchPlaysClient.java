@@ -83,6 +83,7 @@ public class twitchPlaysClient implements ClientModInitializer {
             if (CInputs.sprintcd > 0) CInputs.sprintcd--;
             if (CInputs.usecd > 0) CInputs.usecd--;
             if (CInputs.ecd > 0) CInputs.ecd--;
+            if (CInputs.usedt > 0) CInputs.usedt--;
 
         });
 
@@ -103,7 +104,7 @@ public class twitchPlaysClient implements ClientModInitializer {
                         context.drawText(client.textRenderer, "Sprint", 39, 15, CInputs.sprint ? selectColor() : 0xFF808080, true);
                         context.drawText(client.textRenderer, "Break", 5, 25, CInputs.breaking ? selectColor() : 0xFF808080, true);
                         context.drawText(client.textRenderer, CInputs.ecd > 0 ? String.valueOf((int)(Math.ceil(CInputs.ecd / 20.0))) : "E", 39, 25, (CInputs.ecd > 0) ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Use", 51, 25, CInputs.use ? selectColor() : 0xFF808080, true);
+                        context.drawText(client.textRenderer, "Use", 51, 25, (CInputs.usedt > 0) ? selectColor() : 0xFF808080, true);
                     }else{
                         context.drawText(client.textRenderer, "Chat control disabled", 5, 5, 0xFF0080FF, true);
                         if (Objects.equals(currentChatType, "twitch")) {
