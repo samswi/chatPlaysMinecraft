@@ -8,7 +8,8 @@
     "FpsInactivityMixin",
     "InputMixin",
     "LostFocusPauseMixin",
-    "MouseInputMixin"
+    "MouseInputMixin",
+    "SlotIndexDisplayMixin"
   ],
   "injectors": {
     "defaultRequire": 1
