@@ -1,26 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "thetwitchyoutube",
+  "id": "twitchplays",
   "version": "${version}",
-  "name": "thetwitchyoutube",
+  "name": "twitchChatMCGaming",
   "description": "",
   "authors": [],
   "contact": {},
-  "license": "All-Rights-Reserved",
-  "icon": "",
+  "license": "GPL-3.0",
   "environment": "*",
   "entrypoints": {
     "client": [
       "org.samswi.client.twitchPlaysClient"
     ],
     "main": [
-      "org.samswi.twvsyt"
+      "org.samswi.twitchPlaysMain"
     ]
   },
   "mixins": [
-    "thetwitchyoutube.mixins.json",
+    "twitchplays.mixins.json",
     {
-      "config": "thetwitchyoutube.client.mixins.json",
+      "config": "twitchplays.client.mixins.json",
       "environment": "client"
     }
   ],

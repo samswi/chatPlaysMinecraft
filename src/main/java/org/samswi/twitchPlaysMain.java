@@ -2,7 +2,7 @@ package org.samswi;
 
 import net.fabricmc.api.ModInitializer;
 
-public class twvsyt implements ModInitializer {
+public class twitchPlaysMain implements ModInitializer {
 
     @Override
     public void onInitialize() {
