@@ -9,7 +9,8 @@
     "InputMixin",
     "LostFocusPauseMixin",
     "MouseInputMixin",
-    "SlotIndexDisplayMixin"
+    "SlotIndexDisplayMixin",
+    "AutoAutoJumpMixin"
   ],
   "injectors": {
     "defaultRequire": 1
