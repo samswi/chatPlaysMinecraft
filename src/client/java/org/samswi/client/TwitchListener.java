@@ -46,6 +46,7 @@ public class TwitchListener {
 
         } catch (Exception e) {
             System.err.println("Error connecting to Twitch chat: " + e.getMessage());
+            CInputs.enabled = false;
             e.printStackTrace();
         }
     }

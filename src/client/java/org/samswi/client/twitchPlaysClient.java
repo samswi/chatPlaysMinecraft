@@ -52,7 +52,7 @@ public class twitchPlaysClient implements ClientModInitializer {
                 if(CInputs.enabled) {
                     client.player.sendMessage(Text.literal("Chat control disabled!"), false);
                     CInputs.enabled = false;
-                } else if (!CInputs.enabled) {
+                } else if (!CInputs.enabled && twitchPlaysClient.chatListenerEnabled) {
                     client.player.sendMessage(Text.literal("Chat control enabled!"), false);
                     CInputs.enabled = true;
                 }
@@ -189,6 +189,7 @@ public class twitchPlaysClient implements ClientModInitializer {
             }
 
         }
+        CInputs.enabled = false;
     }
 
 
