@@ -5,6 +5,8 @@ let your stream chat play minecraft\
 This is my first minecraft mod and GitHub repository :)\
 the code might not be the best(but atleast it works)
 
+<b>This project REQUIRES [Fabric API](https://modrinth.com/mod/fabric-api) to work</b>
+
 This project uses [YoutubeLiveChat library by kusaanko](https://github.com/kusaanko/YouTubeLiveChat)
 
 ## How to use?
