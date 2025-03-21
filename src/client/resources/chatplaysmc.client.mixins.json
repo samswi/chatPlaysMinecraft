@@ -4,7 +4,6 @@
   "package": "org.samswi.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "DebugMixin",
     "FpsInactivityMixin",
     "InputMixin",
     "LostFocusPauseMixin",

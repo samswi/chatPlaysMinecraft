@@ -52,7 +52,6 @@ public class YoutubeListener {
                 throw new RuntimeException(e);
             }
             for (ChatItem item : chat.getChatItems()) {
-                System.out.println(item.getAuthorType() + " || " + item.getMessage());
                 CInputs.processChatCommands(item.getMessage());
                 displayMessageInChat(item);
             }

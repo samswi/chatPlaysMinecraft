@@ -108,9 +108,6 @@ public class TwitchListener {
             String chatMessage = extractChatMessage(line);
             if (chatMessage == null) return;
 
-            System.out.println(rawUsername + "'s color: " + userColor);
-            System.out.println(line);
-
             CInputs.processChatCommands(chatMessage);
 
             displayMessageInMinecraft(client, rawUsername, userColor, chatMessage);
