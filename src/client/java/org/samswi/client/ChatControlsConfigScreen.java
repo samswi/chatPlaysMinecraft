@@ -70,7 +70,7 @@ public class ChatControlsConfigScreen extends Screen {
         // Subtracting an extra 10 pixels will give the text some padding.
         // textRenderer, text, x, y, color, hasShadow
         context.drawText(this.textRenderer, "Input twitch username", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
-        context.drawText(this.textRenderer, "Input youtube live link", 165, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Input youtube live id", 165, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     public void runTwitch(String channel){
