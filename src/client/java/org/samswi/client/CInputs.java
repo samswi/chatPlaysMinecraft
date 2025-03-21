@@ -45,7 +45,7 @@ public class CInputs {
     public static int usedt;
 
     public static void processChatCommands(String chatMessage) {
-        if(chatMessage == null) return;
+        if(chatMessage == null || !CInputs.enabled) return;
         if (chatMessage.length() >= 2 && chatMessage.toLowerCase().startsWith("c ") && client.player != null && (client.currentScreen instanceof InventoryScreen || client.currentScreen instanceof CraftingScreen)) {
             String searchFor = chatMessage.substring(2);
             List<RecipeResultCollection> myList = Objects.requireNonNull(client.getNetworkHandler()).getSearchManager().getRecipeOutputReloadFuture().findAll(searchFor.toLowerCase(Locale.ROOT));
