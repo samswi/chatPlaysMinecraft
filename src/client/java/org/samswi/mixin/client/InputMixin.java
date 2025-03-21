@@ -31,5 +31,6 @@ public abstract class InputMixin extends Input {
             this.movementForward = getMovementMultiplier(CInputs.forward, CInputs.backward);
             this.movementSideways = getMovementMultiplier(CInputs.left, CInputs.right);
         }
+        if (CInputs.sprint) client.options.sprintKey.setPressed(true);
     }
 }
