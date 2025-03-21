@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "twitchplays",
+  "id": "chatplaysmc",
   "version": "${version}",
-  "name": "twitchChatMCGaming",
+  "name": "Chat Plays Minecraft",
   "description": "",
   "authors": [],
   "contact": {},
@@ -10,16 +10,16 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "org.samswi.client.twitchPlaysClient"
+      "org.samswi.client.chatPlaysMCClient"
     ],
     "main": [
-      "org.samswi.twitchPlaysMain"
+      "org.samswi.chatPlaysMCMain"
     ]
   },
   "mixins": [
-    "twitchplays.mixins.json",
+    "chatplaysmc.mixins.json",
     {
-      "config": "twitchplays.client.mixins.json",
+      "config": "chatplaysmc.client.mixins.json",
       "environment": "client"
     }
   ],

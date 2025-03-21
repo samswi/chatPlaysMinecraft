@@ -6,13 +6,10 @@ import com.github.kusaanko.youtubelivechat.IdType;
 import com.github.kusaanko.youtubelivechat.YouTubeLiveChat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 // this class is utilising kusaanko's YoutubeLiveChat library
@@ -37,8 +34,8 @@ public class YoutubeListener {
             chat = new YouTubeLiveChat(this.liveChatid, false, IdType.VIDEO);
         } catch (Exception e) {
             client.getToastManager().add(new SystemToast(SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat listener has failed to initialize!"), Text.of("Make sure you inputted the correct live id")));
-            twitchPlaysClient.currentChatType = null;
-            twitchPlaysClient.chatListenerEnabled = false;
+            chatPlaysMCClient.currentChatType = null;
+            chatPlaysMCClient.chatListenerEnabled = false;
             if(client.player != null) client.player.sendMessage(Text.literal("Failed to initialize youtube chat. Make sure you have correct live id").setStyle(Style.EMPTY.withColor(0xFF0000)), false);
             if(client.currentScreen instanceof ChatControlsConfigScreen) ((ChatControlsConfigScreen) client.currentScreen).init();
             throw new RuntimeException(e);
@@ -50,8 +47,8 @@ public class YoutubeListener {
                 client.getToastManager().add(new SystemToast(SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat listener has crashed!"), Text.of("Check logs for more info")));
                 if(client.player != null) client.player.sendMessage(Text.literal("Youtube chat listener has crashed!").setStyle(Style.EMPTY.withColor(0xFF0000)), false);
                 client.setScreen(new ChatControlsConfigScreen());
-                twitchPlaysClient.currentChatType = null;
-                twitchPlaysClient.chatListenerEnabled = false;
+                chatPlaysMCClient.currentChatType = null;
+                chatPlaysMCClient.chatListenerEnabled = false;
                 throw new RuntimeException(e);
             }
             for (ChatItem item : chat.getChatItems()) {

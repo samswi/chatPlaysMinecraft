@@ -130,7 +130,8 @@ public class CInputs {
             }
         } else if (chatMessage.toLowerCase().trim().startsWith("i ")) {
             String[] splited = chatMessage.split(" ");
-            try{twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));}catch(Exception ignore){}
+            try{
+                chatPlaysMCClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));}catch(Exception ignore){}
         } else if (chatMessage.trim().contains(" ")) {
             String[] splited = chatMessage.split(" ");
             try {

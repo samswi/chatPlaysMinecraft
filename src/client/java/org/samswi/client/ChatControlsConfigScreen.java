@@ -29,16 +29,16 @@ public class ChatControlsConfigScreen extends Screen {
             this.init();
         }).dimensions(40, 65, 120, 20).build();
 
-        twitchConnect.active = !twitchPlaysClient.chatListenerEnabled;
+        twitchConnect.active = !chatPlaysMCClient.chatListenerEnabled;
 
         this.addDrawableChild(twitchConnect);
 
         ButtonWidget closeListener = ButtonWidget.builder(Text.of("Close connection"), (btn) -> {
-            twitchPlaysClient.chatListenerStop();
+            chatPlaysMCClient.chatListenerStop();
             this.init();
         }).dimensions(40, 90, 245, 20).build();
 
-        closeListener.active = twitchPlaysClient.chatListenerEnabled;
+        closeListener.active = chatPlaysMCClient.chatListenerEnabled;
 
         this.addDrawableChild(closeListener);
         this.addDrawableChild(twitchChannel);
@@ -51,7 +51,7 @@ public class ChatControlsConfigScreen extends Screen {
             this.init();
         }).dimensions(165, 65, 120, 20).build();
 
-        youtubeConnect.active = !twitchPlaysClient.chatListenerEnabled;
+        youtubeConnect.active = !chatPlaysMCClient.chatListenerEnabled;
 
         this.addDrawableChild(youtubeConnect);
         this.addDrawableChild(youtubeLink);
@@ -74,10 +74,10 @@ public class ChatControlsConfigScreen extends Screen {
     }
 
     public void runTwitch(String channel){
-        twitchPlaysClient.chatListenerInitialize("twitch", channel);
+        chatPlaysMCClient.chatListenerInitialize("twitch", channel);
     }
     public void runYoutube(String link){
-        twitchPlaysClient.chatListenerInitialize("youtube", link);
+        chatPlaysMCClient.chatListenerInitialize("youtube", link);
     }
 }
 
