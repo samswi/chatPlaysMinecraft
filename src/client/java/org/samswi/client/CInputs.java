@@ -45,6 +45,7 @@ public class CInputs {
     public static int usedt;
 
     public static void processChatCommands(String chatMessage) {
+        if(chatMessage == null) return;
         if (chatMessage.length() >= 2 && chatMessage.toLowerCase().startsWith("c ") && client.player != null && (client.currentScreen instanceof InventoryScreen || client.currentScreen instanceof CraftingScreen)) {
             String searchFor = chatMessage.substring(2);
             List<RecipeResultCollection> myList = Objects.requireNonNull(client.getNetworkHandler()).getSearchManager().getRecipeOutputReloadFuture().findAll(searchFor.toLowerCase(Locale.ROOT));
@@ -112,22 +113,25 @@ public class CInputs {
             }
         }
 
-        if (chatMessage.toLowerCase().charAt(0) == 'r' && client.player != null) {
+        if (chatMessage.toLowerCase().charAt(0) == 'r' && client.player != null && chatMessage.length() >= 3) {
             if (chatMessage.toLowerCase().charAt(1) == 'y') {
-                String[] splitted = chatMessage.split("y");
-                float inputtedYaw = Float.parseFloat(splitted[1]);
-                if (inputtedYaw >= -360 && inputtedYaw <= 360)
-                    client.player.setYaw(client.player.getYaw() + inputtedYaw);
+                try {
+                    String[] splitted = chatMessage.split("y");
+                    float inputtedYaw = Float.parseFloat(splitted[1]);
+                    if (inputtedYaw >= -360 && inputtedYaw <= 360)
+                        client.player.setYaw(client.player.getYaw() + inputtedYaw);
+                }catch (Exception ignore){}
             } else if (chatMessage.toLowerCase().charAt(1) == 'p') {
-                String[] splitted = chatMessage.split("p");
-                float inputtedPitch = Float.parseFloat(splitted[1]);
-                if (inputtedPitch >= -360 && inputtedPitch <= 360)
-                    client.player.setPitch(client.player.getPitch() + inputtedPitch);
+                try {
+                    String[] splitted = chatMessage.split("p");
+                    float inputtedPitch = Float.parseFloat(splitted[1]);
+                    if (inputtedPitch >= -360 && inputtedPitch <= 360) client.player.setPitch(client.player.getPitch() + inputtedPitch);
+                }catch (Exception ignore){}
             }
-        } else if (chatMessage.toLowerCase().startsWith("i ")) {
+        } else if (chatMessage.toLowerCase().trim().startsWith("i ")) {
             String[] splited = chatMessage.split(" ");
-            twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));
-        } else if (chatMessage.contains(" ")) {
+            try{twitchPlaysClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));}catch(Exception ignore){}
+        } else if (chatMessage.trim().contains(" ")) {
             String[] splited = chatMessage.split(" ");
             try {
                 int ticks = Integer.parseInt(splited[1]);
@@ -167,7 +171,7 @@ public class CInputs {
                         }
                     }
                 }
-            } catch (NumberFormatException ignored) {}
+            } catch (Exception ignored) {}
         }
     }
 }

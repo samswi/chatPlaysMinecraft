@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class ChatControlsConfigScreen extends Screen {
     TextFieldWidget twitchChannel;
+    TextFieldWidget youtubeLink;
     private String twitchChannelText;
 
     public ChatControlsConfigScreen() {
@@ -23,7 +24,6 @@ public class ChatControlsConfigScreen extends Screen {
         clearChildren();
         twitchChannel = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 40, 40 ,120, 20, Text.of("Select twitch channel"));
         ButtonWidget twitchConnect = ButtonWidget.builder(Text.of("Connect"), (btn) -> {
-            // When the button is clicked, we can display a toast to the screen.
             runTwitch(twitchChannel.getText().toLowerCase());
             twitchChannelText = twitchChannel.getText().toLowerCase();
             this.init();
@@ -34,17 +34,29 @@ public class ChatControlsConfigScreen extends Screen {
         this.addDrawableChild(twitchConnect);
 
         ButtonWidget closeListener = ButtonWidget.builder(Text.of("Close connection"), (btn) -> {
-            // When the button is clicked, we can display a toast to the screen.
             twitchPlaysClient.chatListenerStop();
             this.init();
-        }).dimensions(40, 90, 120, 20).build();
+        }).dimensions(40, 90, 245, 20).build();
 
         closeListener.active = twitchPlaysClient.chatListenerEnabled;
 
         this.addDrawableChild(closeListener);
-
         this.addDrawableChild(twitchChannel);
-        // Register the button widget.
+
+
+
+        youtubeLink = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 165, 40 ,120, 20, Text.of("Input youtube live id"));
+        ButtonWidget youtubeConnect = ButtonWidget.builder(Text.of("Connect"), (btn) -> {
+            runYoutube(youtubeLink.getText());
+            this.init();
+        }).dimensions(165, 65, 120, 20).build();
+
+        youtubeConnect.active = !twitchPlaysClient.chatListenerEnabled;
+
+        this.addDrawableChild(youtubeConnect);
+        this.addDrawableChild(youtubeLink);
+
+
 
 
     }
@@ -58,10 +70,14 @@ public class ChatControlsConfigScreen extends Screen {
         // Subtracting an extra 10 pixels will give the text some padding.
         // textRenderer, text, x, y, color, hasShadow
         context.drawText(this.textRenderer, "Input twitch username", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
+        context.drawText(this.textRenderer, "Input youtube live link", 165, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     public void runTwitch(String channel){
         twitchPlaysClient.chatListenerInitialize("twitch", channel);
+    }
+    public void runYoutube(String link){
+        twitchPlaysClient.chatListenerInitialize("youtube", link);
     }
 }
 

@@ -24,6 +24,10 @@ public class twitchPlaysClient implements ClientModInitializer {
     public static TwitchListener twitchInstance = new TwitchListener("mud_flaps123");
     public static Thread twitchThread = null;
     public static String twitchChannel = null;
+    public static YoutubeListener youtubeInstance = new YoutubeListener("");
+    public static Thread youtubeThread = null;
+    public static String youtubeid = null;
+    public static Boolean ytShouldRun;
     //    public static String currentYoutube;
     public static int selectColor(){
         if (currentChatType.equals("twitch")) {return 0xFFa970ff;}
@@ -110,6 +114,9 @@ public class twitchPlaysClient implements ClientModInitializer {
                         if (Objects.equals(currentChatType, "twitch")) {
                             context.drawText(client.textRenderer, ("twitch.tv/" + twitchChannel), 5, 15, 0xB0a970ff, true);
                         }
+                        else if (Objects.equals(currentChatType, "youtube")){
+                            context.drawText(client.textRenderer, ("youtube.com/live/" + youtubeid), 5, 15, 0xB0ff0931, true);
+                        }
 
                     }
                 }
@@ -152,7 +159,7 @@ public class twitchPlaysClient implements ClientModInitializer {
 
     public static void chatListenerInitialize(String type, String channel) {
         final MinecraftClient client = MinecraftClient.getInstance();
-        if (twitchPlaysClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); ; return;}
+        if (twitchPlaysClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); return;}
         if (type.equals("twitch")) {
             if (twitchThread == null || !twitchThread.isAlive()) {
                 twitchInstance = new TwitchListener(channel);
@@ -161,7 +168,20 @@ public class twitchPlaysClient implements ClientModInitializer {
                 twitchPlaysClient.chatListenerEnabled = true;
                 twitchPlaysClient.currentChatType = "twitch";
                 twitchChannel = channel;
-                MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Twitch chat connected!"), Text.of(("Listening to: " + channel))));
+                MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Twitch chat connected!"), Text.of(("Listening to: twitch.com/" + channel))));
+            }
+        }
+        else if (type.equals("youtube")) {
+            if (youtubeThread == null || !youtubeThread.isAlive()) {
+                System.out.println("Initializing YouTubeListener with channel: " + channel);
+                twitchPlaysClient.ytShouldRun = false;
+                youtubeInstance = new YoutubeListener(channel);
+                youtubeThread = new Thread(youtubeInstance::startListening);
+                youtubeThread.start();
+                twitchPlaysClient.chatListenerEnabled = true;
+                twitchPlaysClient.currentChatType = "youtube";
+                youtubeid = channel;
+                MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat connected!"), Text.of(("Listening to: youtube.com/live/" + channel))));
             }
         }
     }
@@ -170,15 +190,36 @@ public class twitchPlaysClient implements ClientModInitializer {
         if (!twitchPlaysClient.chatListenerEnabled) return;
         if (currentChatType.equals("twitch")) {
             if (twitchInstance != null) {
-                twitchInstance.stopListening(); // signals shouldRun = false
+                twitchInstance.stopListening();
                 try {
                     if (twitchThread != null) {
-                        twitchThread.join(); // waits safely for thread termination
+                        twitchThread.join();
                         twitchThread = null;
                         twitchPlaysClient.chatListenerEnabled = false;
                         twitchPlaysClient.currentChatType = null;
                         twitchChannel = null;
                         MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Disconnected from twitch chat!"), Text.of("")));
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            else {
+                MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("No listener running!"), Text.of("")));
+            }
+
+        }
+        else if (currentChatType.equals("youtube")) {
+            if (youtubeInstance != null) {
+                youtubeInstance.stopListening();
+                try {
+                    if (youtubeThread != null) {
+                        youtubeThread.join();
+                        youtubeThread = null;
+                        twitchPlaysClient.chatListenerEnabled = false;
+                        twitchPlaysClient.currentChatType = null;
+                        youtubeid = null;
+                        MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Disconnected from youtube chat!"), Text.of("")));
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
