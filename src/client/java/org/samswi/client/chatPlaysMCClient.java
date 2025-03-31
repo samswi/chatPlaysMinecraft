@@ -1,6 +1,7 @@
 package org.samswi.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -13,9 +14,10 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
 import java.util.Objects;
 
-public class chatPlaysMCClient implements ClientModInitializer {
+public class ChatPlaysMCClient implements ClientModInitializer {
 
     private static KeyBinding toggleKey;
     private static KeyBinding configKey;
@@ -38,6 +40,16 @@ public class chatPlaysMCClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
+        if (!(new File("config/chatplaysmc.txt").isFile())){
+            ModConfig.createFile();
+        }
+
+        ModConfig.readFile();
+
+        System.out.println(ModConfig.options);
+
+        ClientCommandRegistrationCallback.EVENT.register(ChatPlaysCommand::register);
+
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.examplemod.spook", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -56,15 +68,15 @@ public class chatPlaysMCClient implements ClientModInitializer {
                 if(CInputs.enabled) {
                     client.player.sendMessage(Text.literal("Chat control disabled!"), false);
                     CInputs.enabled = false;
-                } else if (!CInputs.enabled && chatPlaysMCClient.chatListenerEnabled) {
+                } else if (!CInputs.enabled && ChatPlaysMCClient.chatListenerEnabled) {
                     client.player.sendMessage(Text.literal("Chat control enabled!"), false);
                     CInputs.enabled = true;
                 }
             }
 
             while (configKey.wasPressed()) {
-                if (!(client.currentScreen instanceof ChatControlsConfigScreen)) {
-                    client.setScreen(new ChatControlsConfigScreen());
+                if (!(client.currentScreen instanceof ConnectScreen)) {
+                    client.setScreen(new ConnectScreen());
                 }
             }
             if (CInputs.acd == 0) CInputs.left = false;
@@ -159,14 +171,14 @@ public class chatPlaysMCClient implements ClientModInitializer {
 
     public static void chatListenerInitialize(String type, String channel) {
         final MinecraftClient client = MinecraftClient.getInstance();
-        if (chatPlaysMCClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); return;}
+        if (ChatPlaysMCClient.chatListenerEnabled) {client.getToastManager().add(SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Chat listener already running"), Text.of(""))); return;}
         if (type.equals("twitch")) {
             if (twitchThread == null || !twitchThread.isAlive()) {
                 twitchInstance = new TwitchListener(channel);
                 twitchThread = new Thread(twitchInstance::startListening);
                 twitchThread.start();
-                chatPlaysMCClient.chatListenerEnabled = true;
-                chatPlaysMCClient.currentChatType = "twitch";
+                ChatPlaysMCClient.chatListenerEnabled = true;
+                ChatPlaysMCClient.currentChatType = "twitch";
                 twitchChannel = channel;
                 MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Twitch chat connected!"), Text.of(("Listening to: twitch.com/" + channel))));
             }
@@ -174,12 +186,12 @@ public class chatPlaysMCClient implements ClientModInitializer {
         else if (type.equals("youtube")) {
             if (youtubeThread == null || !youtubeThread.isAlive()) {
                 System.out.println("Initializing YouTubeListener with channel: " + channel);
-                chatPlaysMCClient.ytShouldRun = false;
+                ChatPlaysMCClient.ytShouldRun = false;
                 youtubeInstance = new YoutubeListener(channel);
                 youtubeThread = new Thread(youtubeInstance::startListening);
                 youtubeThread.start();
-                chatPlaysMCClient.chatListenerEnabled = true;
-                chatPlaysMCClient.currentChatType = "youtube";
+                ChatPlaysMCClient.chatListenerEnabled = true;
+                ChatPlaysMCClient.currentChatType = "youtube";
                 youtubeid = channel;
                 MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat connected!"), Text.of(("Listening to: youtube.com/live/" + channel))));
             }
@@ -187,7 +199,7 @@ public class chatPlaysMCClient implements ClientModInitializer {
     }
 
     public static void chatListenerStop() {
-        if (!chatPlaysMCClient.chatListenerEnabled) return;
+        if (!ChatPlaysMCClient.chatListenerEnabled) return;
         if (currentChatType.equals("twitch")) {
             if (twitchInstance != null) {
                 twitchInstance.stopListening();
@@ -195,8 +207,8 @@ public class chatPlaysMCClient implements ClientModInitializer {
                     if (twitchThread != null) {
                         twitchThread.join();
                         twitchThread = null;
-                        chatPlaysMCClient.chatListenerEnabled = false;
-                        chatPlaysMCClient.currentChatType = null;
+                        ChatPlaysMCClient.chatListenerEnabled = false;
+                        ChatPlaysMCClient.currentChatType = null;
                         twitchChannel = null;
                         MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Disconnected from twitch chat!"), Text.of("")));
                     }
@@ -216,8 +228,8 @@ public class chatPlaysMCClient implements ClientModInitializer {
                     if (youtubeThread != null) {
                         youtubeThread.join();
                         youtubeThread = null;
-                        chatPlaysMCClient.chatListenerEnabled = false;
-                        chatPlaysMCClient.currentChatType = null;
+                        ChatPlaysMCClient.chatListenerEnabled = false;
+                        ChatPlaysMCClient.currentChatType = null;
                         youtubeid = null;
                         MinecraftClient.getInstance().getToastManager().add(SystemToast.create(MinecraftClient.getInstance(), SystemToast.Type.NARRATOR_TOGGLE, Text.of("Disconnected from youtube chat!"), Text.of("")));
                     }

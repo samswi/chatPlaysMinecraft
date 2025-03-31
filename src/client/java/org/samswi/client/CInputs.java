@@ -58,15 +58,15 @@ public class CInputs {
         switch (chatMessage.toLowerCase()) {
             case "a" -> {
                 CInputs.left = true;
-                CInputs.acd = 20;
+                CInputs.acd = ModConfig.options.get("atime");
             }
             case "d" -> {
                 CInputs.right = true;
-                CInputs.dcd = 20;
+                CInputs.dcd = ModConfig.options.get("dtime");
             }
             case "s" -> {
                 CInputs.backward = true;
-                CInputs.scd = 20;
+                CInputs.scd = ModConfig.options.get("stime");
             }
             case "jump" -> {
                 CInputs.jump = true;
@@ -74,16 +74,16 @@ public class CInputs {
             }
             case "w" -> {
                 CInputs.forward = true;
-                CInputs.wcd = 20;
+                CInputs.wcd = ModConfig.options.get("wtime");
             }
             case "spr", "sprint" -> {
                 CInputs.sprint = true;
-                CInputs.sprintcd = 100;
+                CInputs.sprintcd = ModConfig.options.get("sprinttime");
             }
 
             case "snk", "sneak" -> {
                 CInputs.sneak = true;
-                CInputs.sneakcd = 100;
+                CInputs.sneakcd = ModConfig.options.get("sneaktime");
             }
             case "att", "attack" -> CInputs.attack = !CInputs.attack;
             case "place" -> {
@@ -106,7 +106,7 @@ public class CInputs {
                             client.setScreen(new InventoryScreen(client.player));
                             CInputs.ecd = 100;
                         });
-                    } else if (!(client.currentScreen instanceof OptionsScreen) && !(client.currentScreen instanceof ChatControlsConfigScreen) && !(client.currentScreen instanceof GameMenuScreen)) {
+                    } else if (!(client.currentScreen instanceof OptionsScreen) && !(client.currentScreen instanceof ConnectScreen) && !(client.currentScreen instanceof GameMenuScreen)) {
                         client.execute(() -> client.setScreen(null));
                     }
                 }
@@ -130,9 +130,18 @@ public class CInputs {
             }
         } else if (chatMessage.toLowerCase().trim().startsWith("i ")) {
             String[] splited = chatMessage.split(" ");
+            try{ChatPlaysMCClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));}catch(Exception ignore){}
+
+        }else if (chatMessage.toLowerCase().trim().startsWith("h ")){
+            String[] splited = chatMessage.split(" ");
             try{
-                chatPlaysMCClient.swapSlots(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]));}catch(Exception ignore){}
-        } else if (chatMessage.trim().contains(" ")) {
+                int slot = Integer.parseInt(splited[1]);
+                if (slot >= 1 && slot <= 9 && client.player != null) {
+                    client.player.getInventory().setSelectedSlot(slot - 1);
+                }
+            }catch(Exception ignore){}
+        }
+        else if (ModConfig.options.get("allowCustomTimings") == 1 && chatMessage.trim().contains(" ")) {
             String[] splited = chatMessage.split(" ");
             try {
                 int ticks = Integer.parseInt(splited[1]);
@@ -165,11 +174,6 @@ public class CInputs {
                     case "snk" -> {
                         CInputs.sneak = true;
                         CInputs.sneakcd = ticks;
-                    }
-                    case "h" -> {
-                        if (ticks >= 1 && ticks <= 9 && client.player != null) {
-                            client.player.getInventory().selectedSlot = (ticks - 1);
-                        }
                     }
                 }
             } catch (Exception ignored) {}

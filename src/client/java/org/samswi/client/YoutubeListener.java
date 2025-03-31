@@ -34,10 +34,10 @@ public class YoutubeListener {
             chat = new YouTubeLiveChat(this.liveChatid, false, IdType.VIDEO);
         } catch (Exception e) {
             client.getToastManager().add(new SystemToast(SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat listener has failed to initialize!"), Text.of("Make sure you inputted the correct live id")));
-            chatPlaysMCClient.currentChatType = null;
-            chatPlaysMCClient.chatListenerEnabled = false;
+            ChatPlaysMCClient.currentChatType = null;
+            ChatPlaysMCClient.chatListenerEnabled = false;
             if(client.player != null) client.player.sendMessage(Text.literal("Failed to initialize youtube chat. Make sure you have correct live id").setStyle(Style.EMPTY.withColor(0xFF0000)), false);
-            if(client.currentScreen instanceof ChatControlsConfigScreen) ((ChatControlsConfigScreen) client.currentScreen).init();
+            if(client.currentScreen instanceof ConnectScreen) ((ConnectScreen) client.currentScreen).init();
             throw new RuntimeException(e);
         }
         while (shouldRun) {
@@ -46,9 +46,9 @@ public class YoutubeListener {
             } catch (Exception e) {
                 client.getToastManager().add(new SystemToast(SystemToast.Type.NARRATOR_TOGGLE, Text.of("Youtube chat listener has crashed!"), Text.of("Check logs for more info")));
                 if(client.player != null) client.player.sendMessage(Text.literal("Youtube chat listener has crashed!").setStyle(Style.EMPTY.withColor(0xFF0000)), false);
-                client.setScreen(new ChatControlsConfigScreen());
-                chatPlaysMCClient.currentChatType = null;
-                chatPlaysMCClient.chatListenerEnabled = false;
+                client.setScreen(new ConnectScreen());
+                ChatPlaysMCClient.currentChatType = null;
+                ChatPlaysMCClient.chatListenerEnabled = false;
                 throw new RuntimeException(e);
             }
             for (ChatItem item : chat.getChatItems()) {

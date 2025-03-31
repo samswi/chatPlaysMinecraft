@@ -10,7 +10,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "org.samswi.client.chatPlaysMCClient"
+      "org.samswi.client.ChatPlaysMCClient"
     ],
     "main": [
       "org.samswi.chatPlaysMCMain"
@@ -26,6 +26,6 @@
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "*"
+    "minecraft": "${minecraft_version}"
   }
 }

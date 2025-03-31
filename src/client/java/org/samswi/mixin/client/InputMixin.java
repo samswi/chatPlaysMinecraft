@@ -5,7 +5,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.util.PlayerInput;
-import org.samswi.client.chatPlaysMCClient;
+import net.minecraft.util.math.Vec2f;
+import org.samswi.client.ChatPlaysMCClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,10 +27,11 @@ public abstract class InputMixin extends Input {
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void modifyInput(CallbackInfo ci) {
-        if (CInputs.enabled && chatPlaysMCClient.chatListenerEnabled && !(client.currentScreen instanceof HandledScreen<?>)) {
+        if (CInputs.enabled && ChatPlaysMCClient.chatListenerEnabled && !(client.currentScreen instanceof HandledScreen<?>)) {
             this.playerInput = new PlayerInput(CInputs.forward, CInputs.backward, CInputs.left, CInputs.right, CInputs.jump, CInputs.sneak, CInputs.sprint);
-            this.movementForward = getMovementMultiplier(CInputs.forward, CInputs.backward);
-            this.movementSideways = getMovementMultiplier(CInputs.left, CInputs.right);
+            float movementForward = getMovementMultiplier(CInputs.forward, CInputs.backward);
+            float movementSideways = getMovementMultiplier(CInputs.left, CInputs.right);
+            this.movementVector = (new Vec2f(movementSideways, movementForward)).normalize();
         }
         if (CInputs.sprint) client.options.sprintKey.setPressed(true);
     }
