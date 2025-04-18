@@ -52,7 +52,9 @@ public class YoutubeListener {
                 throw new RuntimeException(e);
             }
             for (ChatItem item : chat.getChatItems()) {
-                CInputs.processChatCommands(item.getMessage());
+                if(ModConfig.options.get("votesmode") == 0) {
+                    CInputs.processChatCommands(item.getMessage());
+                }else if(ModConfig.options.get("votesmode") == 1)VotesSystem.increment(item.getMessage().toLowerCase().trim());
                 displayMessageInChat(item);
             }
             try {
