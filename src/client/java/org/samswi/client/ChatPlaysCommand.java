@@ -15,7 +15,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class ChatPlaysCommand {
-    private static final String[] SUGGESTED_OPTIONS = {"allowCustomTimings", "wtime", "stime", "atime", "dtime", "sprinttime","sneaktime", "breaktime", "usetime"};
+    private static final String[] SUGGESTED_OPTIONS = {"allowCustomTimings", "wtime", "stime", "atime", "dtime", "sprinttime","sneaktime", "breaktime", "usetime", "votesmode", "votingtime", "votingcountingcd"};
 
     private static final SuggestionProvider<FabricClientCommandSource> OPTION_SUGGESTIONS =
             (context, builder) -> {

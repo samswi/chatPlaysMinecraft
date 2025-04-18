@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
@@ -15,6 +16,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class ChatPlaysMCClient implements ClientModInitializer {
@@ -30,6 +32,9 @@ public class ChatPlaysMCClient implements ClientModInitializer {
     public static Thread youtubeThread = null;
     public static String youtubeid = null;
     public static Boolean ytShouldRun;
+    private static float currentBarValue = 0f;    // Updated every tick
+    private static float previousBarValue = 0f;   // Saved from last tick
+
     //    public static String currentYoutube;
     public static int selectColor(){
         if (currentChatType.equals("twitch")) {return 0xFFa970ff;}
@@ -47,6 +52,8 @@ public class ChatPlaysMCClient implements ClientModInitializer {
         ModConfig.readFile();
 
         System.out.println(ModConfig.options);
+
+        Arrays.fill(VotesSystem.top5votes, null);
 
         ClientCommandRegistrationCallback.EVENT.register(ChatPlaysCommand::register);
 
@@ -101,40 +108,67 @@ public class ChatPlaysMCClient implements ClientModInitializer {
             if (CInputs.ecd > 0) CInputs.ecd--;
             if (CInputs.usedt > 0) CInputs.usedt--;
 
+            if (VotesSystem.votingTimeLeft > 0) VotesSystem.votingTimeLeft--;
+            if (VotesSystem.votingCheckTime > 0) VotesSystem.votingCheckTime--;
+
+            if (VotesSystem.votingTimeLeft == 0){
+                VotesSystem.votingTimeLeft = ModConfig.options.get("votingtime");
+                try {CInputs.processChatCommands(VotesSystem.top5votes[0]);}catch(Exception ignore){}
+                Arrays.fill(VotesSystem.top5votes, null);
+                VotesSystem.votesList.clear();
+            }
+            if (VotesSystem.votingCheckTime == 0){
+                VotesSystem.votingCheckTime = ModConfig.options.get("votingcountingcd");
+                VotesSystem.getTop();
+            }
+            previousBarValue = currentBarValue;
+            currentBarValue = (float) getBarProcentage();
         });
 
-        HudRenderCallback.EVENT.register((context, tickDelta) -> {
-                    final MinecraftClient client = MinecraftClient.getInstance();
-                    context.getMatrices().push();
-                    context.getMatrices().scale(1.5f, 1.5f, 1.5f);
+        HudRenderCallback.EVENT.register((context, tickDelt) -> {
+                final MinecraftClient client = MinecraftClient.getInstance();
+                context.getMatrices().push();
+                context.getMatrices().scale(1.5f, 1.5f, 1.5f);
                 if (!chatListenerEnabled) {
                     context.drawText(client.textRenderer, "Chat not connected", 5, 5, 0x80808080, true);
-                } else {
-                    if (CInputs.enabled){
-                        context.drawText(client.textRenderer, "W", 5, 5, CInputs.forward ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "A", 15, 5, CInputs.left ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "S", 25, 5, CInputs.backward ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "D", 35, 5, CInputs.right ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Jump", 45, 5, CInputs.jump ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Sneak", 5, 15, CInputs.sneak ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Sprint", 39, 15, CInputs.sprint ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Break", 5, 25, CInputs.breaking ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, CInputs.ecd > 0 ? String.valueOf((int)(Math.ceil(CInputs.ecd / 20.0))) : "E", 39, 25, (CInputs.ecd > 0) ? selectColor() : 0xFF808080, true);
-                        context.drawText(client.textRenderer, "Use", 51, 25, (CInputs.usedt > 0) ? selectColor() : 0xFF808080, true);
-                    }else{
-                        context.drawText(client.textRenderer, "Chat control disabled", 5, 5, 0xFF0080FF, true);
-                        if (Objects.equals(currentChatType, "twitch")) {
-                            context.drawText(client.textRenderer, ("twitch.tv/" + twitchChannel), 5, 15, 0xB0a970ff, true);
-                        }
-                        else if (Objects.equals(currentChatType, "youtube")){
-                            context.drawText(client.textRenderer, ("youtube.com/live/" + youtubeid), 5, 15, 0xB0ff0931, true);
-                        }
-
+                }else if(!CInputs.enabled) {
+                    context.drawText(client.textRenderer, "Chat control disabled", 5, 5, 0xFF0080FF, true);
+                    if (Objects.equals(currentChatType, "twitch")) {
+                        context.drawText(client.textRenderer, ("twitch.tv/" + twitchChannel), 5, 15, 0xB0a970ff, true);
+                    } else if (Objects.equals(currentChatType, "youtube")) {
+                        context.drawText(client.textRenderer, ("youtube.com/live/" + youtubeid), 5, 15, 0xB0ff0931, true);
                     }
+                }
+                else if (ModConfig.options.get("votesmode") == 0){
+                    context.drawText(client.textRenderer, "W", 5, 5, CInputs.forward ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "A", 15, 5, CInputs.left ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "S", 25, 5, CInputs.backward ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "D", 35, 5, CInputs.right ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "Jump", 45, 5, CInputs.jump ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "Sneak", 5, 15, CInputs.sneak ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "Sprint", 39, 15, CInputs.sprint ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "Break", 5, 25, CInputs.breaking ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, CInputs.ecd > 0 ? String.valueOf((int)(Math.ceil(CInputs.ecd / 20.0))) : "E", 39, 25, (CInputs.ecd > 0) ? selectColor() : 0xFF808080, true);
+                    context.drawText(client.textRenderer, "Use", 51, 25, (CInputs.usedt > 0) ? selectColor() : 0xFF808080, true);
+                } else if (ModConfig.options.get("votesmode") == 1){
+                    context.getMatrices().pop();
+                    context.getMatrices().push();
+                    context.getMatrices().scale(2f, 2f, 2f);
+                    try{if(VotesSystem.top5votes[0] != null)context.drawText(client.textRenderer, (VotesSystem.votesList.get(VotesSystem.top5votes[0]) + " | " +VotesSystem.top5votes[0]), 4, 8, selectColor(), false);}catch (Exception ignore){}
+                    context.getMatrices().pop();
+                    context.getMatrices().push();
+                    context.getMatrices().scale(1.5f, 1.5f, 1.5f);
+                    try{if(VotesSystem.top5votes[1] != null)context.drawText(client.textRenderer, (VotesSystem.votesList.get(VotesSystem.top5votes[1]) + " | " +VotesSystem.top5votes[1]), 5, 25, 0xFF808080, false);}catch (Exception ignore){}
+                    try{if(VotesSystem.top5votes[2] != null)context.drawText(client.textRenderer, (VotesSystem.votesList.get(VotesSystem.top5votes[2]) + " | " +VotesSystem.top5votes[2]), 5, 35, 0xFF808080, false);}catch (Exception ignore){}
+                    try{if(VotesSystem.top5votes[3] != null)context.drawText(client.textRenderer, (VotesSystem.votesList.get(VotesSystem.top5votes[3]) + " | " +VotesSystem.top5votes[3]), 5, 45, 0xFF808080, false);}catch (Exception ignore){}
+                    try{if(VotesSystem.top5votes[4] != null)context.drawText(client.textRenderer, (VotesSystem.votesList.get(VotesSystem.top5votes[4]) + " | " +VotesSystem.top5votes[4]), 5, 55, 0xFF808080, false);}catch (Exception ignore){}
+                    context.getMatrices().pop();
+                    context.getMatrices().push();
+                    context.fill(0, 0, (int) (getBarWidth(context)), 10, 0, selectColor());
+
                 }
             context.getMatrices().pop();
         });
-
 
     }
 
@@ -167,6 +201,21 @@ public class ChatPlaysMCClient implements ClientModInitializer {
             client.interactionManager.clickSlot(handledScreen.getScreenHandler().syncId, index2, 0, SlotActionType.PICKUP, client.player);
             client.interactionManager.clickSlot(handledScreen.getScreenHandler().syncId, index1, 0, SlotActionType.PICKUP, client.player);
         }
+    }
+
+    public static double getBarProcentage(){
+        return (double) VotesSystem.votingTimeLeft / ModConfig.options.get("votingtime");
+    }
+
+    public static float getTickDelta(){
+        return MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
+    }
+    public static double getBarWidth(DrawContext context){
+        float tickDelta = getTickDelta();
+        float interpolatedValue = previousBarValue + (currentBarValue - previousBarValue) * tickDelta;
+
+        return context.getScaledWindowWidth() * interpolatedValue;
+
     }
 
     public static void chatListenerInitialize(String type, String channel) {

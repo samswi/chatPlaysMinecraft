@@ -1,12 +1,10 @@
 package org.samswi.client;
 
-import com.sun.jdi.InvalidTypeException;
-
 import java.io.*;
 import java.util.*;
 
 public class ModConfig {
-    public static Map<String, Integer> options = new LinkedHashMap<String, Integer>();
+    public static Map<String, Integer> options = new LinkedHashMap<>();
 
     public static void setDefaults(){
         ModConfig.options.put("wtime", 20);
@@ -18,7 +16,10 @@ public class ModConfig {
         ModConfig.options.put("usetime", 40);
         ModConfig.options.put("sneaktime", 100);
         ModConfig.options.put("allowCustomTimings", 1);
-    };
+        ModConfig.options.put("votesmode", 1);
+        ModConfig.options.put("votingtime", 60);
+        ModConfig.options.put("votingcountingcd", 10);
+    }
 
     public static void createFile() {
         File myConfigFile = new File("config/chatplaysmc.txt");
@@ -67,7 +68,10 @@ public class ModConfig {
             configWriter.write("sprinttime=" + ModConfig.options.get("sprinttime")); configWriter.newLine();
             configWriter.write("sneaktime=" + ModConfig.options.get("sneaktime")); configWriter.newLine();
             configWriter.write("breaktime=" + ModConfig.options.get("breaktime")); configWriter.newLine();
-            configWriter.write("usetime=" + ModConfig.options.get("usetime")); configWriter.newLine();
+            configWriter.write("usetime=" + ModConfig.options.get("usetime")); configWriter.newLine(); configWriter.newLine();
+            configWriter.write("votesmode=" + ModConfig.options.get("votesmode")); configWriter.newLine();
+            configWriter.write("votingtime=" + ModConfig.options.get("votingtime")); configWriter.newLine();
+            configWriter.write("votingcountingcd=" + ModConfig.options.get("votingcountingcd")); configWriter.newLine();
             configWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -27,9 +27,6 @@ public class TwitchListener {
     public TwitchListener(String selectedChannel) {
         this.CHANNEL = selectedChannel;
     }
-    public void setChannel(String channel){
-        this.CHANNEL = channel;
-    }
 
     public void startListening() {
         final MinecraftClient client = MinecraftClient.getInstance();
@@ -108,7 +105,9 @@ public class TwitchListener {
             String chatMessage = extractChatMessage(line);
             if (chatMessage == null) return;
 
-            CInputs.processChatCommands(chatMessage);
+            if(ModConfig.options.get("votesmode") == 0){
+                CInputs.processChatCommands(chatMessage);
+            }else if(ModConfig.options.get("votesmode") == 1) VotesSystem.increment(chatMessage.toLowerCase().trim());
 
             displayMessageInMinecraft(client, rawUsername, userColor, chatMessage);
 
